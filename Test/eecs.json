@@ -1,0 +1,144 @@
+{
+    "test_bad_wait_signal": [
+        "A",
+        "B",
+        "I",
+        "J"
+    ],
+    "test_big_join": [
+        "A",
+        "B",
+        "E",
+        "H",
+        "I",
+        "K"
+    ],
+    "test_broadcast": [
+        "H",
+        "I",
+        "K"
+    ],
+    "test_cv_multilock": [
+        "B",
+        "G",
+        "I",
+        "J",
+        "Q"
+    ],
+    "test_deadlock": [
+        "A",
+        "B",
+        "E",
+        "K"
+    ],
+    "test_delete_pending": [
+        "A",
+        "B",
+        "E",
+        "K",
+        "N",
+        "O"
+    ],
+    "test_illegal_unlock": [
+        "E",
+        "L"
+    ],
+    "test_illegal_wait": [
+        "E",
+        "I",
+        "J",
+        "L",
+        "Q"
+    ],
+    "test_join_completed": [
+        "I",
+        "J",
+        "N",
+        "Q"
+    ],
+    "test_join_fifo": [
+        "A",
+        "B",
+        "M",
+        "Q"
+    ],
+    "test_lab": [
+        "A",
+        "B",
+        "F"
+    ],
+    "test_madi": [
+        "H",
+        "J"
+    ],
+    "test_multi_cv_one_mutex": [
+        "G",
+        "H",
+        "I",
+        "J"
+    ],
+    "test_multi_yield": [
+        "A",
+        "B",
+        "G",
+        "H",
+        "I",
+        "J",
+        "Q"
+    ],
+    "test_multiple_locks": [
+        "A",
+        "B",
+        "I",
+        "J"
+    ],
+    "test_mutex_cv": [
+        "A",
+        "B",
+        "C",
+        "E",
+        "F",
+        "H",
+        "I",
+        "J",
+        "K",
+        "Q"
+    ],
+    "test_noemi": [
+        "B",
+        "G",
+        "H",
+        "I",
+        "J",
+        "Q"
+    ],
+    "test_other_join": [
+        "B",
+        "H",
+        "Q"
+    ],
+    "test_siwei": [
+        "B",
+        "G",
+        "H",
+        "I",
+        "J"
+    ],
+    "test_stack_overflow": [
+        "H",
+        "I",
+        "J",
+        "K"
+    ],
+    "test_thread_lock": [
+        "I",
+        "O"
+    ],
+    "test_thread_order": [
+        "A",
+        "B",
+        "I",
+        "J",
+        "K"
+    ]
+}

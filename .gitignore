@@ -1,5 +1,5 @@
 # JSON not in the Test directory.
-*.json
+/*.json
 
 # Python
 *.pyc
