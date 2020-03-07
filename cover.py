@@ -13,21 +13,19 @@ Copyright 2020. Siwei Wang.
 # pylint: disable=no-value-for-parameter
 from json import load, dump
 from os import path
-from functools import reduce
 from timeit import default_timer as timer
 from pprint import pprint
-import numpy as np
 import click
 
 
 def parse_args(filepath, output):
     """Parse the json file with extension check."""
     # Check that the file is a json.
-    in_file_extension = path.splitext(filepath)[1]
+    _, in_file_extension = path.splitext(filepath)
     if in_file_extension != '.json':
         raise Exception('Input file must be JSON.')
     if output is not None:
-        out_file_extension = path.splitext(output)[1]
+        _, out_file_extension = path.splitext(output)
         if out_file_extension != '.json':
             raise Exception('Output file must be JSON.')
     with open(filepath, 'r') as fin:
@@ -46,12 +44,19 @@ def check_input(subsets):
     for key, value in subsets.items():
         if not isinstance(value, list):
             raise Exception('Secondary JSON type must be list.')
-        value_set = np.unique(value)
+        value_set = set(value)
         if len(value) != len(value_set):
             raise Exception('There\'s a duplicate in {}.'.format(key))
         alt_subset[key] = value_set
     # Return as dictionary of sets.
     return alt_subset
+
+
+def union(subsets):
+    """Take the union of a list of sets given a dictionary."""
+    set_list = list(subsets.values())
+    first = set_list[0]
+    return first.union(*set_list[1:])
 
 
 def largest_valued_key(dic):
@@ -72,11 +77,9 @@ def biggest_intersection(universe, subsets, large):
     # Stores key value pairs with the largest intersection.
     opt = dict()
     opt_key = None
-    assert len(subsets) > 0
     for key, value in subsets.items():
         # Compare the intersection size.
-        intersection = np.intersect1d(universe, value, assume_unique=True)
-        intersect_size = len(intersection)
+        intersect_size = len(universe.intersection(value))
         if intersect_size > opt_size:
             opt_size = intersect_size
             opt_key = key
@@ -97,9 +100,10 @@ def sorted_set(subset):
 
 def write_solution(solution, output):
     """Print solution to output JSON file."""
-    serialized = {key: value.tolist() for key, value in solution.items()}
+    # Sort solution by key.
+    sorted_solution = dict(sorted(solution.items()))
     with open(output, 'w') as fout:
-        dump(serialized, fout, indent=4)
+        dump(sorted_solution, fout, indent=4)
     print('Solution written to {}.'.format(output))
 
 
@@ -108,7 +112,7 @@ def write_solution(solution, output):
               type=click.Path(exists=True, file_okay=True, dir_okay=False),
               help='The path to the JSON file that will be used as input.')
 @click.option('--large', '-l', is_flag=True, default=False,
-              help='Prefer larger subsets with more overlap.')
+              help='Prefer larger subsets (more overlap). Often more optimal.')
 @click.option('--output', '-o', required=False, type=click.Path(),
               help='JSON file in which to write solution. No arg: console.')
 def main(filepath, large, output):
@@ -119,7 +123,7 @@ def main(filepath, large, output):
     print('Original cover has {} subsets.'.format(len(subset_dict)))
     start = timer()
     # Compute their total union.
-    universe = reduce(np.union1d, subset_dict.values())
+    universe = union(subset_dict)
     solution = dict()
     # We wish to use the subsets to carve away at the universe.
     while len(universe) != 0:
@@ -128,9 +132,9 @@ def main(filepath, large, output):
         # Remove and return the largest entry.
         opt_val = subset_dict.pop(opt_key)
         # Take the set difference against universe.
-        universe = np.setdiff1d(universe, opt_val, assume_unique=True)
-        # Add the entry to solution.
-        solution[opt_key] = opt_val
+        universe = universe.difference(opt_val)
+        # Add the entry to solution as a sorted list.
+        solution[opt_key] = sorted_set(opt_val)
     end = timer()
     print('Greedy solution requires {} subsets.'.format(len(solution)))
     print('Execution took {} seconds.'.format(round(end - start, 4)))
