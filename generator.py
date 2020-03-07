@@ -22,13 +22,13 @@ def check_args(universe, num, size, output):
 
 @click.command()
 @click.option('--universe', '-u', type=int, default=1_000,
-              help='Size of the universe of integers, counting up.')
+              help='Universe size of integers.')
 @click.option('--num', '-n', type=(int, int), default=(100, 500),
-              help='Bounds on the number of subsets in the cover.')
+              help='Bounds on number of subsets in cover.')
 @click.option('--size', '-s', type=(int, int), default=(10, 30),
-              help='Bounds on the size of any given subset.')
+              help='Bounds on size of any subset.')
 @click.option('--output', '-o', type=click.Path(), required=True,
-              help='JSON file in which to write test case.')
+              help='JSON file to write output.')
 def main(universe, num, size, output):
     """Generate random test cases."""
     check_args(universe, num, size, output)
