@@ -136,6 +136,7 @@ def main(filepath, large, output):
         # Add the entry to solution as a sorted list.
         solution[opt_key] = sorted_set(opt_val)
     end = timer()
+    # Report stats and execution time.
     print('Greedy solution requires {} subsets.'.format(len(solution)))
     print('Execution took {} seconds.'.format(round(end - start, 4)))
     # If no argument was provided, pretty print to console.
