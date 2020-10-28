@@ -15,31 +15,34 @@ from json import load, dump
 from os import path
 from timeit import default_timer as timer
 from pprint import pprint
+from typing import Union, Dict
 import click
 
 
-def parse_args(filepath, output):
+def parse_args(filepath: str, output: Union[str, None]) -> Dict[str, list]:
     """Parse the json file with extension check."""
     # Check that the file is a json.
     _, in_file_extension = path.splitext(filepath)
     if in_file_extension != '.json':
         raise Exception('Input file must be JSON.')
     if output is not None:
+        assert isinstance(output, str)
         _, out_file_extension = path.splitext(output)
         if out_file_extension != '.json':
             raise Exception('Output file must be JSON.')
-    with open(filepath, 'r') as fin:
-        return load(fin)
+    with open(filepath) as fin:
+        content: Dict[str, list] = load(fin)
+    return content
 
 
-def check_input(subsets):
+def check_input(subsets: Dict[str, list]) -> Dict[str, set]:
     """Ensure inputs are valid and convert lists to sets."""
     # Do some sanity checks on input.
     if len(subsets) == 0:
         raise Exception('Input is empty.')
     if not isinstance(subsets, dict):
         raise Exception('Parent JSON type must be dict.')
-    alt_subset = dict()
+    alt_subset: Dict[str, set] = dict()
     # Ensure proper type and no duplicates.
     for key, value in subsets.items():
         if not isinstance(value, list):
@@ -52,14 +55,14 @@ def check_input(subsets):
     return alt_subset
 
 
-def union(subsets):
+def union(subsets: Dict[str, set]) -> set:
     """Take the union of a list of sets given a dictionary."""
     set_list = list(subsets.values())
-    first = set_list[0]
+    first: set = set_list[0]
     return first.union(*set_list[1:])
 
 
-def largest_valued_key(dic):
+def largest_valued_key(dic: Dict[str, set]) -> str:
     """Find the key with the largest value."""
     biggest_size = -1
     biggest_key = None
@@ -68,15 +71,17 @@ def largest_valued_key(dic):
         if length > biggest_size:
             biggest_size = length
             biggest_key = key
+    assert isinstance(biggest_key, str)
     return biggest_key
 
 
-def biggest_intersection(universe, subsets, large):
+def biggest_intersection(
+        universe: set, subsets: Dict[str, set], large: bool) -> str:
     """Get the subset with the greatest intersection with universe."""
     opt_size = -1
     # Stores key value pairs with the largest intersection.
-    opt = dict()
-    opt_key = None
+    opt: Dict[str, set] = dict()
+    opt_key = str()
     for key, value in subsets.items():
         # Compare the intersection size.
         intersect_size = len(universe.intersection(value))
@@ -91,20 +96,13 @@ def biggest_intersection(universe, subsets, large):
     return largest_valued_key(opt) if large else opt_key
 
 
-def sorted_set(subset):
-    """Convert a set to a sorted list."""
-    as_list = list(subset)
-    as_list.sort()
-    return as_list
-
-
-def write_solution(solution, output):
+def write_solution(solution: Dict[str, list], output: str):
     """Print solution to output JSON file."""
     # Sort solution by key.
     sorted_solution = dict(sorted(solution.items()))
     with open(output, 'w') as fout:
-        dump(sorted_solution, fout, indent=4)
-    print('Solution written to {}.'.format(output))
+        dump(sorted_solution, fout, indent=2)
+    print(f'Solution written to {output}.')
 
 
 @click.command()
@@ -115,16 +113,16 @@ def write_solution(solution, output):
               help='Prefer larger subsets (more overlap). Often more optimal.')
 @click.option('--output', '-o', required=False, type=click.Path(),
               help='JSON file in which to write solution. No arg: console.')
-def main(filepath, large, output):
+def main(filepath: str, large: bool, output: Union[str, None]):
     """Compute the approximate set cover."""
     # Map every key to a set.
     raw_json = parse_args(filepath, output)
     subset_dict = check_input(raw_json)
-    print('Original cover has {} subsets.'.format(len(subset_dict)))
+    print(f'Original cover has {len(subset_dict)} subsets.')
     start = timer()
     # Compute their total union.
     universe = union(subset_dict)
-    solution = dict()
+    solution: Dict[str, list] = dict()
     # We wish to use the subsets to carve away at the universe.
     while len(universe) != 0:
         # Find the subset with the biggest intersection with universe.
@@ -134,15 +132,16 @@ def main(filepath, large, output):
         # Take the set difference against universe.
         universe = universe.difference(opt_val)
         # Add the entry to solution as a sorted list.
-        solution[opt_key] = sorted_set(opt_val)
+        solution[opt_key] = sorted(opt_val)
     end = timer()
     # Report stats and execution time.
-    print('Greedy solution requires {} subsets.'.format(len(solution)))
-    print('Execution took {} seconds.'.format(round(end - start, 4)))
+    print(f'Greedy solution requires {len(solution)} subsets.')
+    print(f'Execution took {round(end - start, 4)} seconds.')
     # If no argument was provided, pretty print to console.
     if output is None:
         pprint(solution)
     else:
+        assert isinstance(output, str)
         write_solution(solution, output)
 
 

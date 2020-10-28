@@ -6,28 +6,36 @@ Greedy heuristic for the NP-Hard set cover problem. See <https://en.wikipedia.or
 
 The program `cover.py` takes as input a JSON file that names and enumerates each subset. Its output is another dictionary/JSON that gives the approximately smallest subcover of the input. Using the `-l` flag will prefer larger subsets in the event of a tie. The program also notes the amount of time (in seconds) it took to execute the heuristic.
 
-`python3 cover.py` [options]:
+```text
+Usage: cover.py [OPTIONS]
 
-  -f, --filepath PATH : The path to the JSON file that will be used as input. [required]
+  Compute the approximate set cover.
 
-  -l, --large : Prefer larger subsets (more overlap). Often more optimal.
+Options:
+  -f, --filepath FILE  The path to the JSON file that will be used as input.
+                       [required]
 
-  -o, --output PATH : JSON file in which to write solution. No arg: console.
+  -l, --large          Prefer larger subsets (more overlap). Often more
+                       optimal.
 
-  --help : Show this message and exit.
+  -o, --output PATH    JSON file in which to write solution. No arg: console.
+  --help               Show this message and exit.
+```
 
 ## Testing
 
-Several unit tests can be found in the *Test* directory. The test `eecs.json` shows a real-world situation where one may need to choose a subset of test cases that exposes the same bugs as the entire test suite. To show that the greedy heuristic does not always produce the smallest cover, running the program on `non_optimal.json` will produce a cover of 3 subsets, when the optimal cover requires only 2. Finally, `gen.json` and `big.json` are randomly generated test cases using `generator.py`, which is invoked with the following options.
+Several unit tests can be found in the *Test* directory. The test `eecs.json` shows a real-world situation where one may need to choose a subset of test cases that exposes the same bugs as the entire test suite. To show that the greedy heuristic does not always produce the smallest cover, running the program on `non_optimal.json` will produce a cover of 3 subsets, when the optimal cover requires only 2. Finally, `gen.json` is a randomly generated test case using `generator.py`, which is invoked with the following options.
 
-`python3 generator.py` [options]:
+```text
+Usage: generator.py [OPTIONS]
 
-  -u, --universe INTEGER : Size of the universe of integers, counting up.
+  Generate random test cases.
 
-  -n, --num (INTEGER, INTEGER) : Bounds on the number of subsets in the cover.
-
-  -s, --size (INTEGER, INTEGER) : Bounds on the size of any given subset.
-
-  -o, --output PATH : JSON file in which to write test case. [required]
-
-  --help : Show this message and exit.
+Options:
+  -u, --universe INTEGER          Universe size of integers.
+  -n, --num <INTEGER INTEGER>...  Bounds on number of subsets in cover.
+  -s, --size <INTEGER INTEGER>...
+                                  Bounds on size of any subset.
+  -o, --output PATH               JSON file to write output.  [required]
+  --help                          Show this message and exit.
+```

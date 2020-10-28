@@ -7,10 +7,14 @@ Copyright 2020. Siwei Wang.
 from random import randint, sample
 from os import path
 from json import dump
+from typing import Tuple, Dict, List
 import click
 
 
-def check_args(universe, num, size, output):
+def check_args(universe: int,
+               num: Tuple[int, int],
+               size: Tuple[int, int],
+               output: str):
     """Ensure command line arguments are valid."""
     num_lower, num_upper = num
     size_lower, size_upper = size
@@ -29,13 +33,14 @@ def check_args(universe, num, size, output):
               help='Bounds on size of any subset.')
 @click.option('--output', '-o', type=click.Path(), required=True,
               help='JSON file to write output.')
-def main(universe, num, size, output):
+def main(universe: int, num: Tuple[int, int],
+         size: Tuple[int, int], output: str):
     """Generate random test cases."""
     check_args(universe, num, size, output)
     # The number of subsets.
     num_subs = randint(*num)
-    print('Generating {} subsets...'.format(num_subs))
-    problem = dict()
+    print(f'Generating {num_subs} subsets...')
+    problem: Dict[str, List[int]] = dict()
     for i in range(num_subs):
         key = 'S' + str(i + 1)
         # The size of this particular subset.
@@ -43,7 +48,7 @@ def main(universe, num, size, output):
         value = sample(range(universe), sub_size)
         problem[key] = value
     with open(output, 'w') as fout:
-        dump(problem, fout, indent=4)
+        dump(problem, fout, indent=2)
 
 
 if __name__ == '__main__':
