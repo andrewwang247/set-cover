@@ -15,11 +15,11 @@ from json import load, dump
 from os import path
 from timeit import default_timer as timer
 from pprint import pprint
-from typing import Union, Dict
-import click
+from typing import Dict, Optional
+from click import command, option, Path
 
 
-def parse_args(filepath: str, output: Union[str, None]) -> Dict[str, list]:
+def parse_args(filepath: str, output: Optional[str]) -> Dict[str, list]:
     """Parse the json file with extension check."""
     # Check that the file is a json.
     _, in_file_extension = path.splitext(filepath)
@@ -105,15 +105,15 @@ def write_solution(solution: Dict[str, list], output: str):
     print(f'Solution written to {output}.')
 
 
-@click.command()
-@click.option('--filepath', '-f', required=True,
-              type=click.Path(exists=True, file_okay=True, dir_okay=False),
-              help='The path to the JSON file that will be used as input.')
-@click.option('--large', '-l', is_flag=True, default=False,
-              help='Prefer larger subsets (more overlap). Often more optimal.')
-@click.option('--output', '-o', required=False, type=click.Path(),
-              help='JSON file in which to write solution. No arg: console.')
-def main(filepath: str, large: bool, output: Union[str, None]):
+@command()
+@option('--filepath', '-f', required=True,
+        type=Path(exists=True, file_okay=True, dir_okay=False),
+        help='The path to the JSON file that will be used as input.')
+@option('--large', '-l', is_flag=True, default=False,
+        help='Prefer larger subsets (more overlap). Often more optimal.')
+@option('--output', '-o', required=False, type=Path(),
+        help='JSON file in which to write solution. No arg: console.')
+def main(filepath: str, large: bool, output: Optional[str]):
     """Compute the approximate set cover."""
     # Map every key to a set.
     raw_json = parse_args(filepath, output)

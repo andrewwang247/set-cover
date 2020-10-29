@@ -7,8 +7,8 @@ Copyright 2020. Siwei Wang.
 from random import randint, sample
 from os import path
 from json import dump
-from typing import Tuple, Dict, List
-import click
+from typing import Dict, List, Tuple
+from click import command, option, Path
 
 
 def check_args(universe: int,
@@ -24,15 +24,15 @@ def check_args(universe: int,
     assert extension == '.json'
 
 
-@click.command()
-@click.option('--universe', '-u', type=int, default=1_000,
-              help='Universe size of integers.')
-@click.option('--num', '-n', type=(int, int), default=(100, 500),
-              help='Bounds on number of subsets in cover.')
-@click.option('--size', '-s', type=(int, int), default=(10, 30),
-              help='Bounds on size of any subset.')
-@click.option('--output', '-o', type=click.Path(), required=True,
-              help='JSON file to write output.')
+@command()
+@option('--universe', '-u', type=int, default=1_000,
+        help='Universe size of integers.')
+@option('--num', '-n', type=(int, int), default=(100, 500),
+        help='Bounds on number of subsets in cover.')
+@option('--size', '-s', type=(int, int), default=(10, 30),
+        help='Bounds on size of any subset.')
+@option('--output', '-o', type=Path(), required=True,
+        help='JSON file to write output.')
 def main(universe: int, num: Tuple[int, int],
          size: Tuple[int, int], output: str):
     """Generate random test cases."""
