@@ -40,14 +40,14 @@ def main(universe: int, num: Tuple[int, int],
     # The number of subsets.
     num_subs = randint(*num)
     print(f'Generating {num_subs} subsets...')
-    problem: Dict[str, List[int]] = dict()
+    problem: Dict[str, List[int]] = {}
     for i in range(num_subs):
         key = 'S' + str(i + 1)
         # The size of this particular subset.
         sub_size = randint(*size)
         value = sample(range(universe), sub_size)
         problem[key] = value
-    with open(output, 'w') as fout:
+    with open(output, 'w', encoding='UTF-8') as fout:
         dump(problem, fout, indent=2)
 
 

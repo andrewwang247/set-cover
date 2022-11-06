@@ -30,7 +30,7 @@ def parse_args(filepath: str, output: Optional[str]) -> Dict[str, list]:
         _, out_file_extension = path.splitext(output)
         if out_file_extension != '.json':
             raise Exception('Output file must be JSON.')
-    with open(filepath) as fin:
+    with open(filepath, encoding='UTF-8') as fin:
         content: Dict[str, list] = load(fin)
     return content
 
@@ -42,14 +42,14 @@ def check_input(subsets: Dict[str, list]) -> Dict[str, set]:
         raise Exception('Input is empty.')
     if not isinstance(subsets, dict):
         raise Exception('Parent JSON type must be dict.')
-    alt_subset: Dict[str, set] = dict()
+    alt_subset: Dict[str, set] = {}
     # Ensure proper type and no duplicates.
     for key, value in subsets.items():
         if not isinstance(value, list):
             raise Exception('Secondary JSON type must be list.')
         value_set = set(value)
         if len(value) != len(value_set):
-            raise Exception('There\'s a duplicate in {}.'.format(key))
+            raise Exception(f'There\'s a duplicate in {key}.')
         alt_subset[key] = value_set
     # Return as dictionary of sets.
     return alt_subset
@@ -80,7 +80,7 @@ def biggest_intersection(
     """Get the subset with the greatest intersection with universe."""
     opt_size = -1
     # Stores key value pairs with the largest intersection.
-    opt: Dict[str, set] = dict()
+    opt: Dict[str, set] = {}
     opt_key = str()
     for key, value in subsets.items():
         # Compare the intersection size.
@@ -100,7 +100,7 @@ def write_solution(solution: Dict[str, list], output: str):
     """Print solution to output JSON file."""
     # Sort solution by key.
     sorted_solution = dict(sorted(solution.items()))
-    with open(output, 'w') as fout:
+    with open(output, 'w', encoding='UTF-8') as fout:
         dump(sorted_solution, fout, indent=2)
     print(f'Solution written to {output}.')
 
@@ -122,7 +122,7 @@ def main(filepath: str, large: bool, output: Optional[str]):
     start = timer()
     # Compute their total union.
     universe = union(subset_dict)
-    solution: Dict[str, list] = dict()
+    solution: Dict[str, list] = {}
     # We wish to use the subsets to carve away at the universe.
     while len(universe) != 0:
         # Find the subset with the biggest intersection with universe.
